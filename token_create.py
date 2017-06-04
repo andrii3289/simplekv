@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import hashlib
 import time
 
