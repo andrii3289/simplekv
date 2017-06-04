@@ -1,0 +1,6 @@
+<html>
+<p>Hello , at {{ name }} !</p>
+<p> For using this service you need to obtain token <a href="/token">here</a></p>
+<p>After this you can use service in this way <b>curl -H "token: *your token*" -X *method* -k https://{{ host }}/*file_name*/*key*/*value* </b> </p>
+<p>For example : <b> curl -H "token: *your token*" -X POST -k https://{{ host }}/test_file/key/value </b> and for view : <b> curl -H "token: *your token*" -k https://{{ host }}/test_file </b> </p>
+</html>
