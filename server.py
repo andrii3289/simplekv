@@ -1,6 +1,6 @@
 import os
 from socket import gethostbyname
-from flask import Flask,json,jsonify,request,render_template
+from flask import Flask,json,jsonify,request
 from token_create import token_create
 from token_check import token_check
 
