@@ -38,7 +38,7 @@ def add_key(namespace,key,value):
                     data[key] = value
                 with open('{}/{}'.format(token,namespace),'w') as outnamespace:
                     flask.json.dump(data,outnamespace,indent=4)
-                return flask.jsonify({"namespace":"{}".format(namespace),"created":"true"})
+                return flask.jsonify({"namespace":"{}".format(namespace),key:value})
             except Exception as e:
                 return flask.jsonify({"error":"{}".format(str(e))})
     except:
