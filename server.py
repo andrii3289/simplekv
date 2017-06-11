@@ -45,7 +45,7 @@ def add_key(namespace,key,value):
         return flask.jsonify({"error":"token is invalid"})
 
 
-#flask.request whole namespace
+#request whole namespace
 @app.route("/<namespace>")
 def whole_namespace(namespace):
     try:
@@ -57,7 +57,7 @@ def whole_namespace(namespace):
         return flask.jsonify({"error":"{}".format(str(e))})
 
 
-#flask.request value of certain key
+#request value of certain key
 @app.route("/<namespace>/<key>")
 def certain_key(namespace,key):
     try:
@@ -98,7 +98,7 @@ def del_whole_namespace(namespace):
     return flask.jsonify({"namespace":"{}".format(namespace),"deleted":"true"})
 
 
-#token flask.request page
+#token request page
 @app.route("/token")
 def token_request():
     token = token_create.create()
