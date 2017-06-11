@@ -31,16 +31,16 @@ def add_key(namespace,key,value):
                         empty_namespace.write("{}")
                 except Exception as e:
                     return flask.jsonify({"error":"{}".format(str(e))})
-                try:
-                    #creating json from inputs
-                    with open('{}/{}'.format(token,namespace)) as f:
-                        data = flask.json.load(f)
-                        data[key] = value
-                    with open('{}/{}'.format(token,namespace),'w') as outnamespace:
-                        flask.json.dump(data,outnamespace,indent=4)
-                    return flask.jsonify({"namespace":"{}".format(namespace),"created":"true"})
-                except Exception as e:
-                    return flask.jsonify({"error":"{}".format(str(e))})
+            try:
+                #creating json from inputs
+                with open('{}/{}'.format(token,namespace)) as f:
+                    data = flask.json.load(f)
+                    data[key] = value
+                with open('{}/{}'.format(token,namespace),'w') as outnamespace:
+                    flask.json.dump(data,outnamespace,indent=4)
+                return flask.jsonify({"namespace":"{}".format(namespace),"created":"true"})
+            except Exception as e:
+                return flask.jsonify({"error":"{}".format(str(e))})
     except:
         return flask.jsonify({"error":"token is invalid"})
 
