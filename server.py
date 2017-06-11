@@ -1,116 +1,113 @@
 import os
-from socket import gethostbyname
-from flask import Flask,json,jsonify,request
-from token_create import token_create
-from token_check import token_check
+import flask
+import token_check
+import token_create
 
-
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
 
 #default welcome page
 @app.route("/")
 def default():
-    return jsonify({"status":"ok"})
+    return flask.jsonify({"status":"ok"})
 
 
 #creating storage with inputs
-@app.route("/<filename>/<key>/<value>", methods=['POST'])
-def add_key(filename,key,value):
+@app.route("/<namespace>/<key>/<value>", methods=['POST'])
+def add_key(namespace,key,value):
     try:
-        token = request.headers['token']
-        if token_check(token):
+        token = flask.request.headers['token']
+        if token_check.check(token):
             #creating directory if not exists
             if not os.path.exists(token):
                 try:
                     os.makedirs(token)
                 except Exception as e:
-                    return jsonify({"error":"{}".format(str(e))})
-            #creating file if not exists
-            if not os.path.exists('{}/{}'.format(token,filename)):
+                    return flask.jsonify({"error":"{}".format(str(e))})
+            #creating namespace if not exists
+            if not os.path.exists('{}/{}'.format(token,namespace)):
                 try:
-                    with open('{}/{}'.format(token,filename),'w') as empty_file:
-                        empty_file.write("{}")
+                    with open('{}/{}'.format(token,namespace),'w') as empty_namespace:
+                        empty_namespace.write("{}")
                 except Exception as e:
-                    return jsonify({"error":"{}".format(str(e))})
+                    return flask.jsonify({"error":"{}".format(str(e))})
                 try:
                     #creating json from inputs
-                    with open('{}/{}'.format(token,filename)) as f:
-                        data = json.load(f)
-                        dict_new = {key: value}
-                        data.update(dict_new)
-                    with open('{}/{}'.format(token,filename),'w') as outfile:
-                        json.dump(data,outfile,indent=4)
-                    return jsonify({"file":"{}".format(filename),"created":"true"})
+                    with open('{}/{}'.format(token,namespace)) as f:
+                        data = flask.json.load(f)
+                        data[key] = value
+                    with open('{}/{}'.format(token,namespace),'w') as outnamespace:
+                        flask.json.dump(data,outnamespace,indent=4)
+                    return flask.jsonify({"namespace":"{}".format(namespace),"created":"true"})
                 except Exception as e:
-                    return jsonify({"error":"{}".format(str(e))})
+                    return flask.jsonify({"error":"{}".format(str(e))})
     except:
-        return jsonify({"error":"token is invalid"})
+        return flask.jsonify({"error":"token is invalid"})
 
 
-#request whole file
-@app.route("/<filename>")
-def whole_file(filename):
+#flask.request whole namespace
+@app.route("/<namespace>")
+def whole_namespace(namespace):
     try:
-        token = request.headers['token']
-        with open('{}/{}'.format(token,filename)) as response:
-            loaded_response = json.load(response)
-        return jsonify(loaded_response)
+        token = flask.request.headers['token']
+        with open('{}/{}'.format(token,namespace)) as response:
+            loaded_response = flask.json.load(response)
+        return flask.jsonify(loaded_response)
     except Exception as e:
-        return jsonify({"error":"{}".format(str(e))})
+        return flask.jsonify({"error":"{}".format(str(e))})
 
 
-#request value of certain key
-@app.route("/<filename>/<key>")
-def certain_key(filename,key):
+#flask.request value of certain key
+@app.route("/<namespace>/<key>")
+def certain_key(namespace,key):
     try:
-        token = request.headers['token']
-        with open('{}/{}'.format(token,filename)) as response:
-            loaded_response = json.load(response)
+        token = flask.request.headers['token']
+        with open('{}/{}'.format(token,namespace)) as response:
+            loaded_response = flask.json.load(response)
         return loaded_response[key] + "\n" 
     except Exception as e:
-        return jsonify({"error":"{}".format(str(e))})
+        return flask.jsonify({"error":"{}".format(str(e))})
 
 
 #delete certain key
-@app.route("/<filename>/<key>", methods=['DELETE'])
-def del_key(filename,key):
+@app.route("/<namespace>/<key>", methods=['DELETE'])
+def del_key(namespace,key):
     try:
-        token = request.headers['token']
-        with open('{}/{}'.format(token,filename)) as changing_file:
-            changing_data = json.load(changing_file)
+        token = flask.request.headers['token']
+        with open('{}/{}'.format(token,namespace)) as changing_namespace:
+            changing_data = flask.json.load(changing_namespace)
             if key in  changing_data:
                 changing_data.pop(key,None)
             else:
                 return "key is invalid"
-        with open('{}/{}'.format(token,filename),'w') as result:
-            json.dump(changing_data,result)
-        return jsonify({"key":"{}".format(key),"deleted":"true"})
+        with open('{}/{}'.format(token,namespace),'w') as result:
+            flask.json.dump(changing_data,result)
+        return flask.jsonify({"key":"{}".format(key),"deleted":"true"})
     except Exception as e:
-        return jsonify({"error":"{}".format(str(e))})
+        return flask.jsonify({"error":"{}".format(str(e))})
 
 
-#delete whole file
-@app.route("/<filename>", methods=['DELETE'])
-def del_whole_file(filename):
+#delete whole namespace
+@app.route("/<namespace>", methods=['DELETE'])
+def del_whole_namespace(namespace):
     try:
-        token = request.headers['token']
-        os.remove('{}/{}'.format(token,filename))
+        token = flask.request.headers['token']
+        os.remove('{}/{}'.format(token,namespace))
     except Exception as e:
-        return jsonify({"error":"{}".format(str(e))})
-    return jsonify({"filename":"{}".format(filename),"deleted":"true"})
+        return flask.jsonify({"error":"{}".format(str(e))})
+    return flask.jsonify({"namespace":"{}".format(namespace),"deleted":"true"})
 
 
-#token request page
+#token flask.request page
 @app.route("/token")
 def token_request():
-    token = token_create()
+    token = token_create.create()
     try:
         with open('tokens_base','a') as f:
             f.write(token+"\n")
-        return jsonify({"token_request":"ok","token":"{}".format(token)})
+        return flask.jsonify({"token_request":"ok","token":"{}".format(token)})
     except Exception as e:
-        return jsonify({"error":"{}".format(str(e))})
+        return flask.jsonify({"error":"{}".format(str(e))})
 
 
 if __name__ == "__main__":
